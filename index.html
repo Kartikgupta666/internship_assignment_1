@@ -5,34 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Events in Sydney</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-
-        .event {
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin: 10px;
-            border-radius: 5px;
-            display: inline-block;
-            width: 250px;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script>
         async function fetchEvents() {
             try {
@@ -44,33 +17,29 @@
                 eventList.innerHTML = "";
 
                 if (events.length === 0) {
-                    eventList.innerHTML = "<p>No events available.</p>";
+                    eventList.innerHTML = "<p class='text-center text-muted'>No events available.</p>";
                     return;
                 }
 
                 events.forEach(event => {
                     let eventDiv = document.createElement("div");
-                    eventDiv.classList.add("event");
+                    eventDiv.classList.add("col-md-4", "mb-4");
 
-                    let title = document.createElement("h3");
-                    title.textContent = event.title;
-
-                    let date = document.createElement("p");
-                    date.textContent = event.date;
-
-                    let button = document.createElement("button");
-                    button.textContent = "GET TICKETS";
-                    button.onclick = () => redirectToEvent(event.link);
-
-                    eventDiv.appendChild(title);
-                    eventDiv.appendChild(date);
-                    eventDiv.appendChild(button);
+                    eventDiv.innerHTML = `
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">${event.title}</h5>
+                                <p class="card-text text-muted">${event.date}</p>
+                                <button class="btn btn-primary" onclick="redirectToEvent('${event.link}')">GET TICKETS</button>
+                            </div>
+                        </div>
+                    `;
 
                     eventList.appendChild(eventDiv);
                 });
             } catch (error) {
                 console.error("Error fetching events:", error);
-                document.getElementById("events").innerHTML = `<p style="color:red;">Error loading events. Try again later.</p>`;
+                document.getElementById("events").innerHTML = `<p class="text-center text-danger">Error loading events. Try again later.</p>`;
             }
         }
 
@@ -90,7 +59,7 @@
 
                 if (response.ok) {
                     alert("Email saved! Redirecting...");
-                    window.location.href = link; 
+                    window.location.href = link;
                 } else {
                     let data = await response.json();
                     alert("Error: " + data.message);
@@ -110,9 +79,12 @@
     </script>
 </head>
 
-<body>
-    <h1>Events in Sydney</h1>
-    <div id="events"></div>
+<body class="bg-light">
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Events in Sydney</h1>
+        <div id="events" class="row justify-content-center"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
