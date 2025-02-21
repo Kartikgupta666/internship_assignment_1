@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events in Sydney</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .event {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            width: 250px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        async function fetchEvents() {
+            try {
+                let response = await fetch("http://localhost:8001/", { method: "GET" });
+                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+
+                let events = await response.json();
+                let eventList = document.getElementById("events");
+                eventList.innerHTML = "";
+
+                if (events.length === 0) {
+                    eventList.innerHTML = "<p>No events available.</p>";
+                    return;
+                }
+
+                events.forEach(event => {
+                    let eventDiv = document.createElement("div");
+                    eventDiv.classList.add("event");
+
+                    let title = document.createElement("h3");
+                    title.textContent = event.title;
+
+                    let date = document.createElement("p");
+                    date.textContent = event.date;
+
+                    let button = document.createElement("button");
+                    button.textContent = "GET TICKETS";
+                    button.onclick = () => redirectToEvent(event.link);
+
+                    eventDiv.appendChild(title);
+                    eventDiv.appendChild(date);
+                    eventDiv.appendChild(button);
+
+                    eventList.appendChild(eventDiv);
+                });
+            } catch (error) {
+                console.error("Error fetching events:", error);
+                document.getElementById("events").innerHTML = `<p style="color:red;">Error loading events. Try again later.</p>`;
+            }
+        }
+
+        async function redirectToEvent(link) {
+            let email = prompt("Enter your email to get tickets:");
+            if (!email || !validateEmail(email)) {
+                alert("Please enter a valid email.");
+                return;
+            }
+
+            try {
+                let response = await fetch("http://localhost:8001/save-email", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, event: link })
+                });
+
+                if (response.ok) {
+                    alert("Email saved! Redirecting...");
+                    window.location.href = link; 
+                } else {
+                    let data = await response.json();
+                    alert("Error: " + data.message);
+                }
+            } catch (err) {
+                console.error("Error saving email:", err);
+                alert("Something went wrong. Please try again.");
+            }
+        }
+
+        function validateEmail(email) {
+            let re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        window.onload = fetchEvents;
+    </script>
+</head>
+
+<body>
+    <h1>Events in Sydney</h1>
+    <div id="events"></div>
+</body>
+
+</html>
