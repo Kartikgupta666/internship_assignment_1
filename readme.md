@@ -55,3 +55,10 @@ The goal of this project is to develop a web page that displays a list of events
 ## Conclusion
 By following this structured approach, the project will successfully create an automated event listing website for Sydney, offering real-time updates and a smooth user experience.
 
+## Setting up Project
+- fork the git repositry
+- clone the git repositry on your system
+- Run ``` npm install ```
+- once run it , you can create file ``` .env``` by copiying the file ``` .env-example``` 
+- change the values of the key
+- Run ``` npm start```
